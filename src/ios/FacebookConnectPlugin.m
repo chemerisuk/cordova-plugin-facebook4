@@ -499,10 +499,16 @@
             return;
         }
         if (url) {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: url.absoluteString];
+            NSString *promotionCode = [FBSDKAppLinkUtility appInvitePromotionCodeFromURL:url];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                @"targetUri": url.absoluteString,
+                @"promotionCode": promotionCode
+            }];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         } else {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            NSString *errorMessage = @"AppLinkData was not found";
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                              messageAsString:errorMessage];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
     }];

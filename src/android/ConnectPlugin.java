@@ -354,13 +354,16 @@ public class ConnectPlugin extends CordovaPlugin {
         AppLinkData.fetchDeferredAppLinkData(cordova.getActivity().getApplicationContext(),
                 new AppLinkData.CompletionHandler() {
                     @Override
-                    public void onDeferredAppLinkDataFetched(
-                            AppLinkData appLinkData) {
-                        PluginResult pr;
+                    public void onDeferredAppLinkDataFetched(AppLinkData appLinkData) {
                         if (appLinkData == null) {
-                            pr = new PluginResult(PluginResult.Status.OK, "");
+                            callbackContext.error("AppLinkData was not found");
                         } else {
-                            pr = new PluginResult(PluginResult.Status.OK, appLinkData.getTargetUri().toString());
+                            JSONObject message = new JSONObject();
+
+                            message.put("targetUri", appLinkData.getTargetUri().toString());
+                            message.put("promotionCode", appLinkData.getPromotionCode());
+
+                            callbackContext.success(message);
                         }
 
                         callbackContext.sendPluginResult(pr);
