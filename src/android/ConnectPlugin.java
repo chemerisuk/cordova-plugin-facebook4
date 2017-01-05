@@ -330,7 +330,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
             return true;
         } else if (action.equals("appInvite")) {
-            executeAppInvite(args, callbackContext);
+            executeAppInvite(args.getJSONObject(0), callbackContext);
 
             return true;
         } else if (action.equals("getDeferredApplink")) {
@@ -369,16 +369,11 @@ public class ConnectPlugin extends CordovaPlugin {
                 });
     }
 
-    private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
+    private void executeAppInvite(JSONObject parameters, CallbackContext callbackContext) {
         String url = null;
         String picture = null;
-        JSONObject parameters;
-
-        try {
-            parameters = args.getJSONObject(0);
-        } catch (JSONException e) {
-            parameters = new JSONObject();
-        }
+        String promotionCode = null;
+        String promotionText = null;
 
         if (parameters.has("url")) {
             try {
@@ -403,11 +398,34 @@ public class ConnectPlugin extends CordovaPlugin {
             }
         }
 
+        if (parameters.has("promotionText")) {
+            try {
+                promotionText = parameters.getString("promotionText");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'promotionText' parameter provided to dialog");
+                callbackContext.error("Incorrect 'promotionText' parameter");
+                return;
+            }
+        }
+
+        if (parameters.has("promotionCode")) {
+            try {
+                promotionCode = parameters.getString("promotionCode");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'promotionCode' parameter provided to dialog");
+                callbackContext.error("Incorrect 'promotionCode' parameter");
+                return;
+            }
+        }
+
         if (AppInviteDialog.canShow()) {
             AppInviteContent.Builder builder = new AppInviteContent.Builder();
             builder.setApplinkUrl(url);
             if (picture != null) {
                 builder.setPreviewImageUrl(picture);
+            }
+            if (promotionText != null && promotionCode != null) {
+                builder.setPromotionDetails(promotionText, promotionCode);
             }
 
             showDialogContext = callbackContext;

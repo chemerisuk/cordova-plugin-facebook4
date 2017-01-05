@@ -459,6 +459,8 @@
     NSDictionary *options = [command.arguments objectAtIndex:0];
     NSString *url = options[@"url"];
     NSString *picture = options[@"picture"];
+    NSString *promotionText = options[@"promotionText"];
+    NSString *promotionCode = options[@"promotionCode"];
     CDVPluginResult *result;
     self.dialogCallbackId = command.callbackId;
 
@@ -469,6 +471,10 @@
     }
     if (picture) {
         content.appInvitePreviewImageURL = [NSURL URLWithString:picture];
+    }
+    if (promotionText && promotionCode) {
+        content.promotionText = promotionText;
+        content.promotionCode = promotionCode;
     }
 
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
@@ -814,10 +820,10 @@ void FBMethodSwizzle(Class c, SEL originalSelector) {
     }
     // Required by FBSDKCoreKit for deep linking/to complete login
     [[FBSDKApplicationDelegate sharedInstance] application:application openURL:url sourceApplication:[options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"] annotation:0x0];
-    
+
     // Call existing method
     [self swizzled_application:application openURL:url sourceApplication:[options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"] annotation:0x0];
-    
+
     // NOTE: Cordova will run a JavaScript method here named handleOpenURL. This functionality is deprecated
     // but will cause you to see JavaScript errors if you do not have window.handleOpenURL defined:
     // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/703#issuecomment-63748816
