@@ -360,14 +360,15 @@ public class ConnectPlugin extends CordovaPlugin {
                         } else {
                             JSONObject message = new JSONObject();
 
-                            message.put("targetUri", appLinkData.getTargetUri().toString());
-                            message.put("promotionCode", appLinkData.getPromotionCode());
+                            try {
+                                message.put("targetUri", appLinkData.getTargetUri().toString());
+                                message.put("promotionCode", appLinkData.getPromotionCode());
 
-                            callbackContext.success(message);
+                                callbackContext.success(message);
+                            } catch (JSONException e) {
+                                callbackContext.error(e.getMessage());
+                            }
                         }
-
-                        callbackContext.sendPluginResult(pr);
-                        return;
                     }
                 });
     }
